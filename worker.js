@@ -1,12 +1,16 @@
-onconnect = (e)=>{
+const set = new Set();
+
+onconnect = (e) => {
     var port = e.ports[0];
+    set.add(port);
 
-    port.onmessage=(ee)=>{
-        console.log(`worker.js onmessage`,ee)
-        port.postMessage('worker postMessage');
-    }
-
-}
+    port.onmessage = (ee) => {
+        set.forEach((p) => {
+            // console.log(`worker.js onmessage`, ee, p);
+            p.postMessage(ee.data);
+        });
+    };
+};
 
 // onconnect = function(e) {
 //     var port = e.ports[0];
