@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+    <body>
+        1111
+        <script>
+            const sw = new SharedWorker('worker.js');
+            sw.port.onmessage = (e) => {
+                const data = e.data;
+                console.log(data);
+            };
 
-<body>
-    1111
-    <script>
-        const sw = new SharedWorker('worker.js')
-        sw.port.onmessage=(e) => {
-            console.log(`
-        1111sw.port.onmessage((e)=>{
-            `, e)
-        }
-
-        sw.port.postMessage('1.html')
-    </script>
-</body>
-
+            const data = sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')==='true';
+            requestIdleCallback(myNonEssentialWork, { timeout: 1000 }); //第一次调用
+            //timeout: 1000 表示至少每秒运行一次, 因为requestIdleCallback利用的是帧16.6ms里的空闲时间, 但不一定有空闲
+            function myNonEssentialWork(deadline) {
+                // 当回调函数是由于timeout才得以执行的话，deadline.didTimeout为true
+                //doWorkIfNeeded();
+                sw.port.postMessage(data);
+                requestIdleCallback(myNonEssentialWork); //第二次及之后调用
+            }
+        </script>
+    </body>
 </html>
